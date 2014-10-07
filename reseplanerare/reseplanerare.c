@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 struct tlNode{
   int time;
   tNode tail;
@@ -18,9 +19,20 @@ struct blNode{
   blNode tail;
 }
 
+bNode getBus(hNode hallplats, char *busNumber, hNode dest){
+  blNode bussar = hallplats->bussar;
+  bNode buss;
+  while(bussar != NULL){
+    buss = bussar->buss;
+    if(strcmp(buss->busNumber, busNumber) == 0 && buss->dest == dest)
+      return buss;
+    bussar = bussar->tail
+  }
+  //Felhantering för ingen buss hittad
+}
 struct hNode{//hållplats
   char *name;
-  list bussar;
+  blNode bussar;
 }
 
 struct hlNode{
@@ -44,7 +56,7 @@ char *getNextHallplats(char *asdf){//tar emot en rad från nätverk.txt och return
   return memchr(fdsa, ',', strlen(fdsa));
 }
 
-char *getBus(char *asdf){//tar emot en rad från nätverk.txt och returnerar bussnumret
+char *getBusNumber(char *asdf){//tar emot en rad från nätverk.txt och returnerar bussnumret
   return memchr(asdf, ',', strlen(asdf));
 }
 
@@ -73,10 +85,9 @@ void addBusStart(node hallplats, node nextHallplats, char *busNumber, char *slut
   addToList(hallplats->bussar, buss);
 }
 
-void addBus(node prevHallplats, node hallplats, int travelTime, char *busNumber){//lägger till all tider en buss ankommer till/avgår från nextHallplast
-  bNode buss = malloc(sizeof(bNode));
+void addBusTime(node prevHallplats, node hallplats, int travelTime, char *busNumber){//lägger till all tider en buss ankommer till/avgår från nextHallplast
   list timetable;
-  list prevTimes = findBus(prevHallplats->bussar, busNumber)->times;
+  list prevTimes = getBus(prevHallplats, busNumber, hallplats)->times;
   while(times != NULL){
     
   }
@@ -105,7 +116,7 @@ node makeMap(char *bussar_, char *slutstationer_){
   while(!feof(bussar)){
     hallplats = getHallplats(buffer);
     nextHallplats = getNextHallplast(buffer);
-    busNumber = getBus(buffer);
+    busNumber = getBusNumber(buffer);
     travelTime = getTravelTime(buffer);
     if(notInlist(hallplats, hallplatser)){
       addToList(hallplats, hallplatser);
